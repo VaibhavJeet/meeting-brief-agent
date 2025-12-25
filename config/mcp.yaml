@@ -1,0 +1,83 @@
+# MCP (Model Context Protocol) Integration Configuration
+# This file configures external service integrations for the Meeting Brief Agent
+
+integrations:
+  # Calendar Integration
+  calendar:
+    enabled: true
+    provider: google  # Options: google, outlook
+    # Google Calendar settings
+    google:
+      credentials_path: ${GOOGLE_CREDENTIALS_PATH:-./credentials/google.json}
+      scopes:
+        - https://www.googleapis.com/auth/calendar.readonly
+        - https://www.googleapis.com/auth/calendar.events.readonly
+    # Outlook Calendar settings
+    outlook:
+      client_id: ${OUTLOOK_CLIENT_ID}
+      client_secret: ${OUTLOOK_CLIENT_SECRET}
+      tenant_id: ${OUTLOOK_TENANT_ID:-common}
+
+  # Email Integration
+  email:
+    enabled: true
+    provider: gmail  # Options: gmail, imap
+    # Gmail settings
+    gmail:
+      credentials_path: ${GOOGLE_CREDENTIALS_PATH:-./credentials/google.json}
+      scopes:
+        - https://www.googleapis.com/auth/gmail.readonly
+    # IMAP settings
+    imap:
+      host: ${IMAP_HOST}
+      port: ${IMAP_PORT:-993}
+      ssl: true
+      username: ${IMAP_USERNAME}
+      password: ${IMAP_PASSWORD}
+
+  # CRM Integration
+  crm:
+    enabled: false
+    provider: hubspot  # Options: hubspot, salesforce
+    # HubSpot settings
+    hubspot:
+      api_key: ${HUBSPOT_API_KEY}
+      base_url: https://api.hubapi.com
+    # Salesforce settings
+    salesforce:
+      client_id: ${SALESFORCE_CLIENT_ID}
+      client_secret: ${SALESFORCE_CLIENT_SECRET}
+      instance_url: ${SALESFORCE_INSTANCE_URL}
+
+  # Database Integration
+  database:
+    enabled: true
+    provider: postgresql  # Options: postgresql, sqlite
+    connection_string: ${DATABASE_URL:-sqlite+aiosqlite:///./meeting_brief.db}
+
+# Brief Generation Settings
+brief_generation:
+  # Default lookback period for gathering context (days)
+  default_lookback_days: 30
+  
+  # Maximum number of emails to analyze per participant
+  max_emails_per_participant: 50
+  
+  # Maximum number of past meetings to include
+  max_past_meetings: 20
+  
+  # Enable/disable specific brief sections
+  sections:
+    executive_summary: true
+    participant_profiles: true
+    talking_points: true
+    action_items: true
+    risks_opportunities: true
+    relationship_timeline: true
+
+# Vector Store Settings (for semantic search)
+vector_store:
+  provider: chromadb
+  persist_directory: ${CHROMA_PERSIST_DIRECTORY:-./chroma_db}
+  collection_name: ${CHROMA_COLLECTION_NAME:-meeting_context}
+  embedding_model: text-embedding-ada-002
